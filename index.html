@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devala Griffith — Solutions Engineer</title>
+<meta name="description" content="Devala Griffith — customer-facing Solutions Engineer shipping production AI. Claude API, LangGraph, RAG, and a founder's story.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=DM+Sans:opsz,wght@9..40,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d12;
+  --bg-soft:#11141c;
+  --card:#151926;
+  --line:rgba(255,255,255,.08);
+  --text:#e8eaf2;
+  --muted:#9aa1b5;
+  --cyan:hsl(187,74%,52%);
+  --purple:hsl(270,70%,62%);
+  --grad:linear-gradient(100deg,hsl(187,74%,52%),hsl(270,70%,62%));
+  --radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+::selection{background:hsl(270,70%,62%,.4)}
+
+/* ---------- scroll progress ---------- */
+#progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--grad);z-index:1000;transition:width .08s linear}
+
+/* ---------- cursor glow ---------- */
+#glow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,hsl(187,74%,52%,.07),transparent 60%);
+  transform:translate(-50%,-50%);transition:opacity .4s}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;width:100%;z-index:900;display:flex;justify-content:space-between;align-items:center;
+  padding:18px 5vw;backdrop-filter:blur(14px);background:rgba(11,13,18,.55);border-bottom:1px solid var(--line)}
+.logo{font-family:'Space Grotesk';font-weight:700;font-size:1.15rem;cursor:pointer;user-select:none;letter-spacing:-.02em}
+.logo span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav ul{display:flex;gap:28px;list-style:none}
+nav a{color:var(--muted);text-decoration:none;font-size:.92rem;transition:color .25s}
+nav a:hover{color:var(--text)}
+
+/* ---------- hero ---------- */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:0 5vw;position:relative;z-index:1}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;z-index:-1;animation:drift 18s ease-in-out infinite alternate}
+.blob.b1{width:46vw;height:46vw;background:hsl(187,74%,30%);top:-10%;right:-8%}
+.blob.b2{width:34vw;height:34vw;background:hsl(270,70%,35%);bottom:-6%;left:-6%;animation-delay:-9s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,50px) scale(1.15)}}
+
+.kicker{font-size:.95rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:18px;opacity:0;animation:rise .8s .15s forwards}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(2.6rem,8.5vw,7rem);line-height:1.02;letter-spacing:-.03em}
+h1 .line{display:block;overflow:hidden}
+h1 .line>span{display:inline-block;transform:translateY(110%);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+h1 .line:nth-child(2)>span{animation-delay:.12s}
+h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes rise{to{transform:translateY(0);opacity:1}}
+
+.typer-row{margin-top:26px;font-size:clamp(1.05rem,2vw,1.4rem);color:var(--muted);min-height:1.8em;opacity:0;animation:rise .8s .5s forwards}
+.typer{color:var(--text);border-right:2px solid var(--cyan);padding-right:3px}
+
+.hero-cta{margin-top:42px;display:flex;gap:16px;flex-wrap:wrap;opacity:0;animation:rise .8s .7s forwards}
+.btn{font-family:'Space Grotesk';font-weight:600;padding:14px 26px;border-radius:999px;text-decoration:none;font-size:.98rem;
+  transition:transform .25s,box-shadow .25s;display:inline-block;will-change:transform}
+.btn-primary{background:var(--grad);color:#0b0d12}
+.btn-ghost{border:1px solid var(--line);color:var(--text)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px hsl(187,74%,40%,.25)}
+
+.scroll-hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,9px)}}
+
+/* ---------- marquee ---------- */
+.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;overflow:hidden;white-space:nowrap;background:var(--bg-soft)}
+.marquee-track{display:inline-block;animation:scrollx 28s linear infinite}
+.marquee span{font-family:'Space Grotesk';font-size:1rem;color:var(--muted);margin:0 26px}
+.marquee b{color:var(--cyan);font-weight:500}
+@keyframes scrollx{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section{padding:110px 5vw;max-width:1180px;margin:0 auto;position:relative;z-index:1}
+.sec-label{font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+h2{font-family:'Space Grotesk';font-weight:700;font-size:clamp(1.9rem,4.4vw,3.1rem);letter-spacing:-.02em;margin-bottom:34px}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- about ---------- */
+.about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:start}
+.about-grid p{color:var(--muted);font-size:1.08rem;margin-bottom:18px}
+.about-grid p b{color:var(--text);font-weight:600}
+.stat-stack{display:grid;gap:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;transition:transform .3s,border-color .3s}
+.stat:hover{transform:translateY(-4px);border-color:hsl(187,74%,52%,.4)}
+.stat .num{font-family:'Space Grotesk';font-size:1.9rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .lbl{color:var(--muted);font-size:.92rem}
+
+/* ---------- bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:16px}
+.cell{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s;will-change:transform}
+.cell:hover{transform:translateY(-6px) scale(1.012);border-color:hsl(270,70%,62%,.45)}
+.cell::after{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),hsl(187,74%,52%,.08),transparent 45%);opacity:0;transition:opacity .3s}
+.cell:hover::after{opacity:1}
+.cell h3{font-family:'Space Grotesk';font-size:1.12rem;font-weight:600;margin-bottom:8px}
+.cell p{color:var(--muted);font-size:.92rem}
+.cell .big{font-family:'Space Grotesk';font-size:2.6rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.c-wide{grid-column:span 2;grid-row:span 1}
+.c-tall{grid-column:span 2;grid-row:span 2}
+.c-emoji{position:absolute;right:18px;bottom:12px;font-size:2.2rem;opacity:.25}
+
+/* ---------- featured project ---------- */
+.feature{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:48px;overflow:hidden;position:relative}
+.feature .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tag{font-size:.78rem;padding:5px 12px;border-radius:999px;border:1px solid hsl(187,74%,52%,.35);color:var(--cyan)}
+.feature p{color:var(--muted)}
+.flow{display:grid;gap:10px}
+.node{background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-family:'Space Grotesk';font-size:.9rem;
+  opacity:.45;transform:translateX(14px);transition:all .5s}
+.node.active{opacity:1;transform:none;border-color:hsl(187,74%,52%,.5);box-shadow:0 0 22px hsl(187,74%,52%,.12)}
+.node small{display:block;color:var(--muted);font-family:'DM Sans';font-size:.78rem;margin-top:2px}
+
+/* ---------- timeline ---------- */
+.timeline{position:relative;margin-left:14px}
+.timeline::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(var(--cyan),var(--purple))}
+.t-item{padding:8px 0 44px 36px;position:relative}
+.t-item::before{content:"";position:absolute;left:-7px;top:16px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--cyan);transition:background .4s}
+.t-item.in::before{background:var(--cyan);box-shadow:0 0 18px hsl(187,74%,52%,.6)}
+.t-item .when{font-size:.84rem;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase}
+.t-item h3{font-family:'Space Grotesk';font-size:1.3rem;margin:6px 0}
+.t-item p{color:var(--muted);max-width:640px}
+
+/* ---------- contact ---------- */
+.contact{text-align:center;padding-bottom:140px}
+.contact h2{font-size:clamp(2.2rem,6vw,4.2rem)}
+.contact p{color:var(--muted);max-width:520px;margin:0 auto 36px}
+.links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+
+footer{border-top:1px solid var(--line);padding:26px 5vw;display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;flex-wrap:wrap;gap:10px}
+footer .hint{opacity:.55}
+
+/* ---------- toast + eq ---------- */
+#toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,120px);background:var(--card);border:1px solid hsl(187,74%,52%,.5);
+  padding:14px 26px;border-radius:999px;font-family:'Space Grotesk';z-index:1001;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+#toast.show{transform:translate(-50%,0)}
+#eq{position:fixed;bottom:0;left:0;right:0;height:64px;display:flex;align-items:flex-end;gap:3px;z-index:899;pointer-events:none;opacity:0;transition:opacity .6s;padding:0 4px}
+#eq.on{opacity:.5}
+#eq i{flex:1;background:var(--grad);border-radius:3px 3px 0 0;height:8%}
+canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:1002}
+
+@media(max-width:880px){
+  .about-grid,.feature{grid-template-columns:1fr}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  nav ul{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="glow"></div>
+<canvas id="confetti"></canvas>
+<div id="toast">🥁 You found the rhythm!</div>
+<div id="eq"></div>
+
+<nav>
+  <div class="logo" id="logo" title="">D<span>G</span><span style="opacity:.0">.</span></div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#project">Project</a></li>
+    <li><a href="#story">Story</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="kicker">Solutions Engineer · Gainesville, FL → anywhere</div>
+  <h1>
+    <span class="line"><span>I make AI</span></span>
+    <span class="line"><span class="grad">actually ship.</span></span>
+  </h1>
+  <div class="typer-row">Customer-facing engineer who <span class="typer" id="typer"></span></div>
+  <div class="hero-cta">
+    <a class="btn btn-primary magnetic" href="#project">See the work</a>
+    <a class="btn btn-ghost magnetic" href="https://github.com/devala-g" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="mtrack">
+    <span>Claude API <b>·</b></span><span>LangGraph <b>·</b></span><span>LangSmith <b>·</b></span><span>RAG <b>·</b></span>
+    <span>Python <b>·</b></span><span>C# <b>·</b></span><span>Agentic Workflows <b>·</b></span><span>Prompt Engineering <b>·</b></span>
+    <span>Oracle / SQL <b>·</b></span><span>Solutions Engineering <b>·</b></span><span>Discovery & Demos <b>·</b></span><span>MIT Applied Data Science <b>·</b></span>
+  </div>
+</div>
+
+<section id="about">
+  <div class="sec-label reveal">About</div>
+  <h2 class="reveal">Engineer. Founder. <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">Teacher.</span></h2>
+  <div class="about-grid">
+    <div class="reveal">
+      <p>I'm a Solutions Engineer at Infotech, where I sit between customers and engineering — scoping, prototyping, and shipping AI into a production enterprise stack.</p>
+      <p>I <b>co-created a suite of AI tools that sped our team's work up by 50%</b>, automated client legacy-to-Oracle migrations with the <b>Claude API</b>, and partnered with a teammate to build the prompt-engineering environment that <b>doubled our productivity</b>.</p>
+      <p>Before engineering, I built things from zero: the first and top online <b>Mridanga school</b> in the world, and <b>LiveGreen</b> — an app later featured on the iOS App Store. That founder background is why I'm at home owning a room, a roadmap, or a customer relationship.</p>
+      <p>B.S. Computer Science, University of Florida (3.9). Applied Data Science certificate, MIT (4.0).</p>
+    </div>
+    <div class="stat-stack reveal">
+      <div class="stat"><div class="num" data-count="50" data-suffix="%">0%</div><div class="lbl">team speed-up from AI tool suite I co-created</div></div>
+      <div class="stat"><div class="num" data-count="250" data-suffix="+">0</div><div class="lbl">students taught worldwide</div></div>
+      <div class="stat"><div class="num" data-count="400" data-suffix="k+">0</div><div class="lbl">YouTube views on my teaching content</div></div>
+      <div class="stat"><div class="num" data-count="2" data-suffix="x">0</div><div class="lbl">productivity from our prompt-engineering environment</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="sec-label reveal">Highlights</div>
+  <h2 class="reveal">Things I've shipped</h2>
+  <div class="bento">
+    <div class="cell c-tall reveal">
+      <h3>AI tool suite @ Infotech</h3>
+      <p>Co-created internal AI tooling adopted by the whole team — 50% faster delivery, better reliability, fewer escalations. Built on the Claude API inside a legacy Oracle stack.</p>
+      <div class="c-emoji">⚡</div>
+    </div>
+    <div class="cell reveal">
+      <div class="big">#1</div>
+      <p>New Release on Amazon — first-ever Mridanga instruction book (then category Best Seller)</p>
+    </div>
+    <div class="cell reveal">
+      <div class="big">🍏</div>
+      <p>Co-founded LiveGreen — later featured on the iOS App Store (Earth Day 2019)</p>
+    </div>
+    <div class="cell c-wide reveal">
+      <h3>Claude-powered migration automation</h3>
+      <p>Multi-step agentic automation that maps client legacy data into a modern Oracle environment — replacing the most repetitive engineer-hours per migration.</p>
+      <div class="c-emoji">🤖</div>
+    </div>
+    <div class="cell reveal">
+      <div class="big">MIT</div>
+      <p>Applied Data Science certificate — GPA 4.0</p>
+    </div>
+    <div class="cell reveal">
+      <div class="big">1st</div>
+      <p>Top of Computer Organization, out of 350+ students at UF</p>
+    </div>
+  </div>
+</section>
+
+<section id="project">
+  <div class="sec-label reveal">Featured project</div>
+  <h2 class="reveal">Customer-Support Triage Agent</h2>
+  <div class="feature reveal">
+    <div>
+      <p>An open-source multi-step agentic workflow: it classifies a ticket, retrieves grounded context from a Chroma vector store (RAG), drafts a reply, and <b style="color:var(--text)">evaluates its own confidence</b> before sending — escalating to a human when it isn't sure. Vague tickets route to a ReAct sub-agent that gathers context with tools first. Every node emits a LangSmith trace.</p>
+      <div class="tagrow">
+        <span class="tag">LangGraph</span><span class="tag">LangSmith</span><span class="tag">Chroma RAG</span>
+        <span class="tag">ReAct</span><span class="tag">Claude API</span><span class="tag">Human-in-the-loop</span>
+      </div>
+      <a class="btn btn-primary magnetic" href="https://github.com/devala-g/langgraph-customer-triage" target="_blank" rel="noopener">View on GitHub ↗</a>
+    </div>
+    <div class="flow" id="flow">
+      <div class="node">classify <small>billing · technical · vague</small></div>
+      <div class="node">retrieve <small>Chroma semantic search (RAG)</small></div>
+      <div class="node">draft <small>grounded reply with citations</small></div>
+      <div class="node">confidence check <small>self-evaluation, 0.0 – 1.0</small></div>
+      <div class="node">send ✓ / human review <small>safety routing built in</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="sec-label reveal">The story</div>
+  <h2 class="reveal">From rhythm to systems</h2>
+  <div class="timeline">
+    <div class="t-item reveal">
+      <div class="when">2017 — 2021 · Founder</div>
+      <h3>Mridanga Studios</h3>
+      <p>Founded the first and top online school for the Mridanga — an Indian classical drum. 250+ students worldwide, six books, a Udemy course, 400k+ YouTube views, and a team of student instructors running 15–30 classes a week.</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="when">2017 — 2018 · Co-founder</div>
+      <h3>LiveGreen</h3>
+      <p>Designed the core experience of a sustainability app and negotiated its key data partnerships. The app was later featured on the iOS App Store for Earth Day 2019.</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="when">2020 — 2023 · B.S. Computer Science</div>
+      <h3>University of Florida</h3>
+      <p>3.9 GPA, Dean's List, and top of a 350+ student Computer Organization class. Built a Turing-complete language, a memory manager, and a client-edge-server network along the way.</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="when">2022 — now · Solutions Engineer</div>
+      <h3>Infotech</h3>
+      <p>Customer-facing engineering on enterprise legacy migrations — and the place where I started shipping production AI: Claude API automation, a team-wide AI tool suite, and a prompt-engineering environment that changed how we work.</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="when">2025 · Certificate</div>
+      <h3>MIT — Applied Data Science</h3>
+      <p>GPA 4.0. Doubled down on the ML foundations under the production AI work.</p>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="sec-label reveal">Contact</div>
+  <h2 class="reveal">Let's build something <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">real.</span></h2>
+  <p class="reveal">Open to Solutions / Forward Deployed / Customer Engineering roles at teams shipping real AI. Remote, or on-site in the right city.</p>
+  <div class="links reveal">
+    <a class="btn btn-primary magnetic" href="mailto:devala.griffith@outlook.com">Email me</a>
+    <a class="btn btn-ghost magnetic" href="https://www.linkedin.com/in/devalagriffith/" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a class="btn btn-ghost magnetic" href="https://github.com/devala-g" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 Devala Griffith</div>
+  <div class="hint">psst — try the Konami code, or click my logo five times 🥁</div>
+</footer>
+
+<script>
+/* ============ scroll progress ============ */
+const prog=document.getElementById('progress');
+addEventListener('scroll',()=>{const h=document.documentElement;
+  prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';},{passive:true});
+
+/* ============ cursor glow ============ */
+const glow=document.getElementById('glow');
+addEventListener('pointermove',e=>{glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px';},{passive:true});
+
+/* ============ reveal on scroll ============ */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.18});
+document.querySelectorAll('.reveal,.t-item').forEach(el=>io.observe(el));
+
+/* ============ counters ============ */
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;cio.unobserve(e.target);
+  const el=e.target,end=+el.dataset.count,suf=el.dataset.suffix||'';let t0=null;
+  const step=ts=>{if(!t0)t0=ts;const p=Math.min((ts-t0)/1200,1);
+    el.textContent=Math.round(end*(1-Math.pow(1-p,3)))+suf;
+    if(p<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}),{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* ============ typewriter ============ */
+const roles=['ships production AI.','runs the demo.','owns the customer relationship.','builds agentic workflows.','teaches complex things simply.'];
+const typer=document.getElementById('typer');let ri=0,ci=0,del=false;
+(function tick(){
+  const word=roles[ri];
+  typer.textContent=word.slice(0,ci);
+  if(!del&&ci<word.length){ci++;setTimeout(tick,55);}
+  else if(!del){del=true;setTimeout(tick,1700);}
+  else if(ci>0){ci--;setTimeout(tick,28);}
+  else{del=false;ri=(ri+1)%roles.length;setTimeout(tick,350);}
+})();
+
+/* ============ bento cursor-tracking sheen ============ */
+document.querySelectorAll('.cell').forEach(c=>c.addEventListener('pointermove',e=>{
+  const r=c.getBoundingClientRect();
+  c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+  c.style.setProperty('--my',(e.clientY-r.top)+'px');
+}));
+
+/* ============ magnetic buttons ============ */
+document.querySelectorAll('.magnetic').forEach(b=>{
+  b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();
+    b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.3-3}px)`;});
+  b.addEventListener('pointerleave',()=>b.style.transform='');
+});
+
+/* ============ agent flow scrollytelling ============ */
+const nodes=[...document.querySelectorAll('.node')];
+const fio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;fio.unobserve(e.target);
+  nodes.forEach((n,i)=>setTimeout(()=>n.classList.add('active'),i*420));
+}),{threshold:.4});
+if(nodes.length)fio.observe(document.getElementById('flow'));
+
+/* ============ WebAudio mridanga-ish drum ============ */
+let actx;
+function drum(freq=140,dur=.22,when=0,gainV=.5){
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const t=actx.currentTime+when,o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(freq,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(freq*.35,40),t+dur);
+  g.gain.setValueAtTime(gainV,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dur+.05);
+}
+function bol(){ // ta - ki - ta - dhin pattern
+  [[180,0],[240,.18],[180,.36],[95,.54],[180,.78],[240,.96],[95,1.14],[95,1.32]]
+  .forEach(([f,w])=>drum(f,.2,w,f<100?.65:.4));
+}
+
+/* ============ easter egg 1: logo ×5 = drum bol + music mode ============ */
+const logo=document.getElementById('logo');let clicks=0,clickTimer;
+const eq=document.getElementById('eq');
+for(let i=0;i<48;i++){eq.appendChild(document.createElement('i'));}
+let eqTimer=null;
+function musicMode(on){
+  eq.classList.toggle('on',on);
+  clearInterval(eqTimer);
+  if(on)eqTimer=setInterval(()=>{[...eq.children].forEach(b=>b.style.height=(8+Math.random()*88)+'%');},120);
+}
+logo.addEventListener('click',()=>{
+  clicks++;clearTimeout(clickTimer);clickTimer=setTimeout(()=>clicks=0,1600);
+  drum(150+clicks*40,.18,0,.35);
+  if(clicks>=5){clicks=0;bol();musicMode(!eq.classList.contains('on'));
+    toast(eq.classList.contains('on')?'🎵 Music mode on — I was a Mridanga teacher first':'🎵 Music mode off');}
+});
+
+/* ============ easter egg 2: Konami code = confetti + drum roll ============ */
+const seq=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let pos=0;
+addEventListener('keydown',e=>{
+  pos=(e.key===seq[pos])?pos+1:(e.key===seq[0]?1:0);
+  if(pos===seq.length){pos=0;konami();}
+});
+function konami(){
+  toast('🥁 You found the rhythm!');
+  for(let i=0;i<10;i++)drum(90+Math.random()*200,.12,i*.07,.3);
+  confettiBurst();
+}
+
+/* ============ confetti ============ */
+const cv=document.getElementById('confetti'),cx=cv.getContext('2d');let parts=[];
+function confettiBurst(){
+  cv.width=innerWidth;cv.height=innerHeight;
+  const colors=['#3ec6d8','#9a5cf0','#e8eaf2','#5ce0c0'];
+  for(let i=0;i<160;i++)parts.push({x:innerWidth/2,y:innerHeight*.35,
+    vx:(Math.random()-.5)*16,vy:Math.random()*-13-3,g:.35,s:4+Math.random()*5,
+    c:colors[i%4],r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,life:120});
+  if(parts.length<=160)confettiTick();
+}
+function confettiTick(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts=parts.filter(p=>p.life-->0);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.r+=p.vr;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;
+    cx.fillRect(-p.s/2,-p.s/2,p.s,p.s);cx.restore();});
+  if(parts.length)requestAnimationFrame(confettiTick);else cx.clearRect(0,0,cv.width,cv.height);
+}
+
+/* ============ toast ============ */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ============ easter egg 3: console note ============ */
+console.log('%cHey, you found the third easter egg 👋','font-size:16px;font-weight:bold;color:#3ec6d8');
+console.log('%cI build agents with the same curiosity you just showed.\nLet\'s talk: devala.griffith@outlook.com\nCode: github.com/devala-g/langgraph-customer-triage','color:#9aa1b5;font-size:12px');
+</script>
+</body>
+</html>
