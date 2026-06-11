@@ -121,7 +121,7 @@ h2{font-family:'Space Grotesk';font-weight:700;font-size:clamp(1.9rem,4.4vw,3.1r
 .portrait:hover img{filter:none;transform:scale(1.035)}
 
 /* ---------- bento ---------- */
-.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:16px}
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(158px,auto);gap:16px}
 .cell{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden;
   transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s;will-change:transform}
 .cell:hover{transform:translateY(-6px) scale(1.012);border-color:hsl(270,70%,62%,.45)}
@@ -192,41 +192,92 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:1002}
 &lt;<span class="k">html</span> lang=<span class="s">"en"</span>&gt;
 &lt;<span class="k">head</span>&gt;
   &lt;<span class="k">meta</span> charset=<span class="s">"UTF-8"</span>&gt;
+  &lt;<span class="k">meta</span> name=<span class="s">"viewport"</span> content=<span class="s">"width=device-width, initial-scale=1.0"</span>&gt;
   &lt;<span class="k">title</span>&gt;Devala Griffith — Solutions Engineer&lt;/<span class="k">title</span>&gt;
+  &lt;<span class="k">link</span> href=<span class="s">"...Space+Grotesk...DM+Sans..."</span> rel=<span class="s">"stylesheet"</span>&gt;
   &lt;<span class="k">style</span>&gt;
-    :root{ --cyan:hsl(187,74%,52%); --purple:hsl(270,70%,62%);
-           --grad:linear-gradient(100deg,var(--cyan),var(--purple)); }
-    h1{ font-family:'Space Grotesk'; font-size:clamp(2.6rem,8.5vw,7rem); }
-    .reveal{ opacity:0; transform:translateY(36px); transition:.8s; }
+    :root{
+      --bg:#0b0d12; --card:#151926; --text:#e8eaf2; --muted:#9aa1b5;
+      --cyan:hsl(187,74%,52%); --purple:hsl(270,70%,62%);
+      --grad:linear-gradient(100deg,var(--cyan),var(--purple));
+      --radius:18px;
+    }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); }
+    h1{ font-family:'Space Grotesk'; font-weight:700;
+        font-size:clamp(2.6rem,8.5vw,7rem); letter-spacing:-.03em; }
+    h1 .grad{ background:var(--grad); -webkit-background-clip:text; color:transparent; }
+    .reveal{ opacity:0; transform:translateY(36px); transition:.8s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in{ opacity:1; transform:none; }
+    .bento{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .cell{ background:var(--card); border:1px solid var(--line);
+           border-radius:var(--radius); transition:transform .35s; }
+    .cell:hover{ transform:translateY(-6px) scale(1.012); }
+    #codelayer{ position:fixed; inset:0; z-index:0;
+      mask:radial-gradient(circle 135px at var(--fx) var(--fy),#000,transparent 74%); }
   &lt;/<span class="k">style</span>&gt;
 &lt;/<span class="k">head</span>&gt;
 &lt;<span class="k">body</span>&gt;
+  &lt;<span class="k">nav</span>&gt;
+    &lt;<span class="k">div</span> class=<span class="s">"logo"</span>&gt;D&lt;<span class="k">span</span>&gt;G&lt;/<span class="k">span</span>&gt;&lt;/<span class="k">div</span>&gt;
+    &lt;<span class="k">ul</span>&gt;&lt;<span class="k">li</span>&gt;&lt;<span class="k">a</span> href=<span class="s">"#about"</span>&gt;About&lt;/<span class="k">a</span>&gt;&lt;/<span class="k">li</span>&gt;&lt;/<span class="k">ul</span>&gt;
+  &lt;/<span class="k">nav</span>&gt;
+
   &lt;<span class="k">header</span> class=<span class="s">"hero"</span>&gt;
-    &lt;<span class="k">div</span> class=<span class="s">"kicker"</span>&gt;Solutions Engineer · Gainesville, FL&lt;/<span class="k">div</span>&gt;
-    &lt;<span class="k">h1</span>&gt;I make AI &lt;<span class="k">span</span> class=<span class="s">"grad"</span>&gt;actually ship.&lt;/<span class="k">span</span>&gt;&lt;/<span class="k">h1</span>&gt;
+    &lt;<span class="k">div</span> class=<span class="s">"blob b1"</span>&gt;&lt;/<span class="k">div</span>&gt;&lt;<span class="k">div</span> class=<span class="s">"blob b2"</span>&gt;&lt;/<span class="k">div</span>&gt;
+    &lt;<span class="k">div</span> class=<span class="s">"kicker"</span>&gt;Solutions Engineer · Gainesville, FL → anywhere&lt;/<span class="k">div</span>&gt;
+    &lt;<span class="k">h1</span>&gt;
+      &lt;<span class="k">span</span> class=<span class="s">"line"</span>&gt;&lt;<span class="k">span</span>&gt;I make AI&lt;/<span class="k">span</span>&gt;&lt;/<span class="k">span</span>&gt;
+      &lt;<span class="k">span</span> class=<span class="s">"line"</span>&gt;&lt;<span class="k">span</span> class=<span class="s">"grad"</span>&gt;actually ship.&lt;/<span class="k">span</span>&gt;&lt;/<span class="k">span</span>&gt;
+    &lt;/<span class="k">h1</span>&gt;
+    &lt;<span class="k">div</span> class=<span class="s">"typer-row"</span>&gt;Customer-facing engineer who &lt;<span class="k">span</span> id=<span class="s">"typer"</span>&gt;&lt;/<span class="k">span</span>&gt;&lt;/<span class="k">div</span>&gt;
   &lt;/<span class="k">header</span>&gt;
 
+  &lt;<span class="k">section</span> id=<span class="s">"about"</span>&gt;
+    &lt;<span class="k">h2</span>&gt;Engineer. Founder. Teacher.&lt;/<span class="k">h2</span>&gt;
+    &lt;<span class="k">p</span>&gt;Co-created a suite of AI tools that sped our team up 50%.&lt;/<span class="k">p</span>&gt;
+  &lt;/<span class="k">section</span>&gt;
+
   &lt;<span class="k">script</span>&gt;
-    <span class="k">function</span> drum(freq=140,dur=.22){
-      <span class="k">const</span> o=actx.createOscillator(), g=actx.createGain();
-      o.frequency.setValueAtTime(freq,t);
-      o.frequency.exponentialRampToValueAtTime(freq*.35,t+dur);
-      o.connect(g).connect(actx.destination); o.start(t);
-    }
-    <span class="k">const</span> roles=[<span class="s">'ships production AI.'</span>,<span class="s">'runs the demo.'</span>,
-                 <span class="s">'owns the customer relationship.'</span>];
+    <span class="s">/* scroll progress + reveal-on-scroll observers */</span>
+    addEventListener(<span class="s">'scroll'</span>,()=&gt;{
+      <span class="k">const</span> h=document.documentElement;
+      prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+<span class="s">'%'</span>;
+    },{passive:<span class="k">true</span>});
+
     <span class="k">const</span> io=<span class="k">new</span> IntersectionObserver(es=&gt;es.forEach(e=&gt;{
-      <span class="k">if</span>(e.isIntersecting) e.target.classList.add(<span class="s">'in'</span>);
+      <span class="k">if</span>(e.isIntersecting){ e.target.classList.add(<span class="s">'in'</span>); io.unobserve(e.target); }
     }),{threshold:.18});
 
+    <span class="s">// WebAudio mridanga drum — synthesized membrane tone</span>
+    <span class="k">function</span> drum(freq=140,dur=.22,when=0,gainV=.5){
+      <span class="k">const</span> t=actx.currentTime+when;
+      <span class="k">const</span> o=actx.createOscillator(), g=actx.createGain();
+      o.type=<span class="s">'sine'</span>; o.frequency.setValueAtTime(freq,t);
+      o.frequency.exponentialRampToValueAtTime(freq*.35,t+dur);
+      g.gain.setValueAtTime(gainV,t);
+      g.gain.exponentialRampToValueAtTime(.001,t+dur);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t+dur+.05);
+    }
+
+    <span class="k">const</span> roles=[<span class="s">'ships production AI.'</span>,<span class="s">'runs the demo.'</span>,
+                 <span class="s">'owns the customer relationship.'</span>,
+                 <span class="s">'builds agentic workflows.'</span>];
+
+    <span class="s">// ── the project this site is about ──────────────────────────</span>
     <span class="s">// classify → retrieve → draft → confidence → send | human_review</span>
     <span class="k">async function</span> triage(ticket){
       <span class="k">const</span> category = <span class="k">await</span> classify(ticket);
-      <span class="k">const</span> ctx = <span class="k">await</span> retrieve(category, ticket);   <span class="s">// Chroma RAG</span>
+      <span class="k">if</span>(category === <span class="s">'vague'</span>) <span class="k">return</span> reactAgent(ticket);  <span class="s">// tool use</span>
+      <span class="k">const</span> ctx   = <span class="k">await</span> retrieve(category, ticket);    <span class="s">// Chroma RAG</span>
       <span class="k">const</span> draft = <span class="k">await</span> compose(ctx);
-      <span class="k">const</span> conf = <span class="k">await</span> selfEvaluate(draft);        <span class="s">// 0.0 – 1.0</span>
+      <span class="k">const</span> conf  = <span class="k">await</span> selfEvaluate(draft);          <span class="s">// 0.0 – 1.0</span>
       <span class="k">return</span> conf &gt;= 0.7 ? send(draft) : escalate(draft);
     }
+
+    <span class="s">// Konami code → confetti + drum roll. you're welcome 🥁</span>
+    <span class="k">const</span> seq=[<span class="s">'ArrowUp'</span>,<span class="s">'ArrowUp'</span>,<span class="s">'ArrowDown'</span>,<span class="s">'ArrowDown'</span>,
+               <span class="s">'ArrowLeft'</span>,<span class="s">'ArrowRight'</span>,<span class="s">'ArrowLeft'</span>,<span class="s">'ArrowRight'</span>,<span class="s">'b'</span>,<span class="s">'a'</span>];
   &lt;/<span class="k">script</span>&gt;
 &lt;/<span class="k">body</span>&gt;
 &lt;/<span class="k">html</span>&gt;</pre></div>
