@@ -21,8 +21,8 @@
   --grad:linear-gradient(100deg,hsl(187,74%,52%),hsl(270,70%,62%));
   --radius:18px;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
 body{
   font-family:'DM Sans',sans-serif;
   background:var(--bg);
@@ -348,28 +348,36 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:1002}
     <div class="cell c-tall reveal">
       <h3>AI tool suite @ Infotech</h3>
       <p>Co-created internal AI tooling adopted by the whole team — 50% faster delivery, better reliability, fewer escalations. Built on the Claude API inside a legacy Oracle stack.</p>
-      <div class="c-emoji">⚡</div>
     </div>
     <div class="cell reveal">
       <div class="big">#1</div>
       <p>New Release on Amazon — first-ever Mridanga instruction book (then category Best Seller)</p>
     </div>
     <div class="cell reveal">
-      <div class="big">🍏</div>
+      <div class="big" style="line-height:0">
+        <svg width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="LiveGreen — iOS app">
+          <defs><linearGradient id="lgphone" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="hsl(187,74%,52%)"/><stop offset="1" stop-color="hsl(270,70%,62%)"/>
+          </linearGradient></defs>
+          <rect x="13" y="2" width="18" height="40" rx="5" fill="url(#lgphone)"/>
+          <rect x="15.5" y="7" width="13" height="26" rx="1.5" fill="#0b0d12"/>
+          <circle cx="22" cy="4.6" r=".9" fill="#0b0d12"/>
+          <rect x="19" y="37.4" width="6" height="1.6" rx=".8" fill="#0b0d12"/>
+        </svg>
+      </div>
       <p>Co-founded LiveGreen — later featured on the iOS App Store (Earth Day 2019)</p>
     </div>
     <div class="cell c-wide reveal">
       <h3>Claude-powered migration automation</h3>
       <p>Multi-step agentic automation that maps client legacy data into a modern Oracle environment — replacing the most repetitive engineer-hours per migration.</p>
-      <div class="c-emoji">🤖</div>
     </div>
     <div class="cell reveal">
       <div class="big">MIT</div>
       <p>Applied Data Science certificate — GPA 4.0</p>
     </div>
     <div class="cell reveal">
-      <div class="big">1st</div>
-      <p>Top of Computer Organization, out of 350+ students at UF</p>
+      <div class="big">Top</div>
+      <p>Among the top students in Computer Organization — 350+ enrolled at UF</p>
     </div>
   </div>
 </section>
@@ -413,7 +421,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:1002}
     <div class="t-item reveal">
       <div class="when">2020 — 2023 · B.S. Computer Science</div>
       <h3>University of Florida</h3>
-      <p>3.9 GPA, Dean's List, and top of a 350+ student Computer Organization class. Built a Turing-complete language, a memory manager, and a client-edge-server network along the way.</p>
+      <p>3.9 GPA, Dean's List, and among the top students in a 350+ person Computer Organization class. Built a Turing-complete language, a memory manager, and a client-edge-server network along the way.</p>
     </div>
     <div class="t-item reveal">
       <div class="when">2022 — now · Solutions Engineer</div>
@@ -508,19 +516,44 @@ const fio=new IntersectionObserver(es=>es.forEach(e=>{
 }),{threshold:.4});
 if(nodes.length)fio.observe(document.getElementById('flow'));
 
-/* ============ WebAudio mridanga-ish drum ============ */
+/* ============ WebAudio tabla / mridanga stroke ============
+   A noise transient (finger strike) + near-harmonic pitched partials
+   (the drum's "singing" ring). Bass strokes bend down (palm pressure);
+   ringing strokes hold pitch.                                        */
 let actx;
-function drum(freq=140,dur=.22,when=0,gainV=.5){
-  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-  const t=actx.currentTime+when,o=actx.createOscillator(),g=actx.createGain();
-  o.type='sine';o.frequency.setValueAtTime(freq,t);
-  o.frequency.exponentialRampToValueAtTime(Math.max(freq*.35,40),t+dur);
-  g.gain.setValueAtTime(gainV,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
-  o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dur+.05);
+function drum(freq=200,dur=.45,when=0,gainV=.5,bend=false){
+  const a=actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  if(a.state==='suspended')a.resume();
+  const t=a.currentTime+when;
+  const out=a.createGain();out.gain.value=1;out.connect(a.destination);
+
+  // strike transient — short filtered noise burst
+  const nlen=Math.floor(a.sampleRate*.03),nb=a.createBuffer(1,nlen,a.sampleRate),nd=nb.getChannelData(0);
+  for(let i=0;i<nlen;i++)nd[i]=(Math.random()*2-1)*(1-i/nlen);
+  const ns=a.createBufferSource();ns.buffer=nb;
+  const nf=a.createBiquadFilter();nf.type='bandpass';nf.frequency.value=freq*6;nf.Q.value=.9;
+  const ng=a.createGain();ng.gain.setValueAtTime(gainV*.55,t);ng.gain.exponentialRampToValueAtTime(.001,t+.04);
+  ns.connect(nf).connect(ng).connect(out);ns.start(t);ns.stop(t+.05);
+
+  // tuned partials — tabla overtones sit close to harmonic ratios
+  [[1,1,1],[2,.55,.7],[3,.30,.5],[4.2,.16,.35]].forEach(([r,pg,ds])=>{
+    const o=a.createOscillator(),g=a.createGain(),f0=freq*r;
+    o.type='sine';o.frequency.setValueAtTime(f0,t);
+    if(bend)o.frequency.exponentialRampToValueAtTime(Math.max(f0*.55,30),t+dur*.5);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(gainV*pg,t+.004);
+    g.gain.exponentialRampToValueAtTime(.0008,t+dur*ds);
+    o.connect(g).connect(out);o.start(t);o.stop(t+dur*ds+.05);
+  });
 }
-function bol(){ // ta - ki - ta - dhin pattern
-  [[180,0],[240,.18],[180,.36],[95,.54],[180,.78],[240,.96],[95,1.14],[95,1.32]]
-  .forEach(([f,w])=>drum(f,.2,w,f<100?.65:.4));
+/* named tabla bols → tuned drum() calls. `when` schedules within a phrase. */
+function stroke(name,when=0){
+  if(name==='dha'){drum(100,.55,when,.55,true);drum(330,.5,when,.4,false);return;} // bass+ring
+  const m={na:[330,.5,.45,false],tin:[262,.55,.45,false],tun:[196,.6,.5,false],
+           ta:[392,.42,.4,false],ge:[100,.55,.6,true]}[name]||[262,.5,.45,false];
+  drum(m[0],m[1],when,m[2],m[3]);
+}
+function bol(){ // a little phrase: Dha ge na tin · na ge dha tin
+  ['dha','ge','na','tin','na','ge','dha','tin'].forEach((n,i)=>stroke(n,i*.19));
 }
 
 /* ============ easter egg 1: logo ×5 = drum bol + music mode ============ */
@@ -535,9 +568,18 @@ function musicMode(on){
 }
 logo.addEventListener('click',()=>{
   clicks++;clearTimeout(clickTimer);clickTimer=setTimeout(()=>clicks=0,1600);
-  drum(150+clicks*40,.18,0,.35);
+  stroke(['na','tin','tun','ta','ge'][clicks-1]||'tin');
   if(clicks>=5){clicks=0;bol();musicMode(!eq.classList.contains('on'));
-    toast(eq.classList.contains('on')?'🎵 Music mode on — I was a Mridanga teacher first':'🎵 Music mode off');}
+    toast(eq.classList.contains('on')?'🎵 Music mode on — tap any card to play a tabla bol':'🎵 Music mode off');}
+});
+
+/* music mode: tapping any card / button plays a tabla stroke (cycles a phrase) */
+const bols=['na','tin','tun','ge','dha','na','tin','ta'];let bi=0;
+document.addEventListener('click',e=>{
+  if(!eq.classList.contains('on'))return;          // only while music mode is on
+  if(e.target.closest('#logo'))return;             // logo has its own handler
+  if(!e.target.closest('.cell,.btn,.node,.tag,.stat,.portrait,a,button'))return;
+  stroke(bols[bi++%bols.length]);
 });
 
 /* ============ easter egg 2: Konami code = confetti + drum roll ============ */
@@ -549,7 +591,10 @@ addEventListener('keydown',e=>{
 });
 function konami(){
   toast('🥁 You found the rhythm!');
-  for(let i=0;i<10;i++)drum(90+Math.random()*200,.12,i*.07,.3);
+  // a celebratory tabla phrase resolving into a tihai (phrase played x3)
+  ['dha','tin','na','dha','ge','na','tin','na'].forEach((n,i)=>stroke(n,i*.16));
+  const base=8*.16+.18;
+  [0,1,2].forEach(k=>stroke('dha',base+k*.24)); // tihai resolve
   confettiBurst();
 }
 
