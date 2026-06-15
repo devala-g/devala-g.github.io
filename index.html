@@ -523,6 +523,9 @@ if(nodes.length)fio.observe(document.getElementById('flow'));
 let actx;
 function drum(freq=200,dur=.45,when=0,gainV=.5,bend=false){
   const a=actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  // iOS: opt Web Audio into the "playback" category so the silent/ring
+  // switch doesn't mute it (Safari 16.4+); harmless elsewhere.
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
   if(a.state==='suspended')a.resume();
   const t=a.currentTime+when;
   const out=a.createGain();out.gain.value=1;out.connect(a.destination);
@@ -570,7 +573,7 @@ logo.addEventListener('click',()=>{
   clicks++;clearTimeout(clickTimer);clickTimer=setTimeout(()=>clicks=0,1600);
   stroke(['na','tin','tun','ta','ge'][clicks-1]||'tin');
   if(clicks>=5){clicks=0;bol();musicMode(!eq.classList.contains('on'));
-    toast(eq.classList.contains('on')?'🎵 Music mode on — tap any card to play a tabla bol':'🎵 Music mode off');}
+    toast(eq.classList.contains('on')?'🎵 Music mode on — tap any card to play a Mridanga bol':'🎵 Music mode off');}
 });
 
 /* music mode: tapping any card / button plays a tabla stroke (cycles a phrase) */
